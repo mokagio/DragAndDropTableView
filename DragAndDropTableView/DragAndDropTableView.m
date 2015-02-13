@@ -358,31 +358,34 @@ const static CGFloat kAutoScrollingThreshold = 60;
     UIImageView *snapshot = (UIImageView *)[timer userInfo];
     snapshot.center = CGPointMake(snapshot.center.x, snapshot.center.y + _autoscrollDistance);
 //    [snapshot moveByOffset:CGPointMake(_autoscrollDistance, 0)];
+   
+    if (_autoscrollDistance == 0) { return; }
     
-    [self swapCellsIfNeededForSnapshotView:snapshot];
+    BOOL scrollingDownwards = _autoscrollDistance > 0;
+    UITableViewCell *cellToSwapCandidate = scrollingDownwards ? [[self visibleCells] lastObject] : [[self visibleCells] firstObject];
+    NSIndexPath *indexPath = [self indexPathForCell:cellToSwapCandidate];
+    [self swapCellsIfNeededForSnapshotView:snapshot withCellAtIndexPath:indexPath];
 }
 
 #pragma mark - Swap Cells
 
-- (void)swapCellsIfNeededForSnapshotView:(UIView *)snapshot {
-    UITableViewCell *lastCell = [[self visibleCells] lastObject];
-    NSIndexPath *lastIndexPath = [self indexPathForCell:lastCell];
-    if(![lastIndexPath isEqual:_movingIndexPath])
+- (void)swapCellsIfNeededForSnapshotView:(UIView *)snapshot withCellAtIndexPath:(NSIndexPath *)targetIndexPath {
+    if(![targetIndexPath isEqual:_movingIndexPath])
     {
         // ask the delegate to show a new location for the move
         if([self.delegate respondsToSelector:@selector(tableView:targetIndexPathForMoveFromRowAtIndexPath:toProposedIndexPath:)])
-            lastIndexPath = [self.delegate tableView:self targetIndexPathForMoveFromRowAtIndexPath:_movingIndexPath toProposedIndexPath:lastIndexPath];
+            targetIndexPath = [self.delegate tableView:self targetIndexPathForMoveFromRowAtIndexPath:_movingIndexPath toProposedIndexPath:targetIndexPath];
         
         [self beginUpdates];
-        [self moveRowAtIndexPath:_movingIndexPath toIndexPath:lastIndexPath];
+        [self moveRowAtIndexPath:_movingIndexPath toIndexPath:targetIndexPath];
         // inform datasource
         if ([self.dataSource respondsToSelector:@selector(tableView:moveRowAtIndexPath:toIndexPath:)])
-            [self.dataSource tableView:self moveRowAtIndexPath:_movingIndexPath toIndexPath:lastIndexPath];
+            [self.dataSource tableView:self moveRowAtIndexPath:_movingIndexPath toIndexPath:targetIndexPath];
         [self endUpdates];
         
         [self bringSubviewToFront:_cellSnapShotImageView];
         
-        _movingIndexPath = lastIndexPath;
+        _movingIndexPath = targetIndexPath;
     }
 }
 
