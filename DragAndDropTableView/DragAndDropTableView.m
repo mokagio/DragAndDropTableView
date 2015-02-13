@@ -358,6 +358,32 @@ const static CGFloat kAutoScrollingThreshold = 60;
     UIImageView *snapshot = (UIImageView *)[timer userInfo];
     snapshot.center = CGPointMake(snapshot.center.x, snapshot.center.y + _autoscrollDistance);
 //    [snapshot moveByOffset:CGPointMake(_autoscrollDistance, 0)];
+    
+    [self swapCellsIfNeededForSnapshotView:snapshot];
+}
+
+#pragma mark - Swap Cells
+
+- (void)swapCellsIfNeededForSnapshotView:(UIView *)snapshot {
+    UITableViewCell *lastCell = [[self visibleCells] lastObject];
+    NSIndexPath *lastIndexPath = [self indexPathForCell:lastCell];
+    if(![lastIndexPath isEqual:_movingIndexPath])
+    {
+        // ask the delegate to show a new location for the move
+        if([self.delegate respondsToSelector:@selector(tableView:targetIndexPathForMoveFromRowAtIndexPath:toProposedIndexPath:)])
+            lastIndexPath = [self.delegate tableView:self targetIndexPathForMoveFromRowAtIndexPath:_movingIndexPath toProposedIndexPath:lastIndexPath];
+        
+        [self beginUpdates];
+        [self moveRowAtIndexPath:_movingIndexPath toIndexPath:lastIndexPath];
+        // inform datasource
+        if ([self.dataSource respondsToSelector:@selector(tableView:moveRowAtIndexPath:toIndexPath:)])
+            [self.dataSource tableView:self moveRowAtIndexPath:_movingIndexPath toIndexPath:lastIndexPath];
+        [self endUpdates];
+        
+        [self bringSubviewToFront:_cellSnapShotImageView];
+        
+        _movingIndexPath = lastIndexPath;
+    }
 }
 
 #pragma mark -
