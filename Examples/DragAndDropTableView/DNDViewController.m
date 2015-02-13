@@ -24,6 +24,9 @@
                        [NSMutableArray array],
                        [NSMutableArray arrayWithObjects:@"e",@"f",@"g",@"h", nil],
                        [NSMutableArray arrayWithObjects:@"i",@"j",@"k",@"l", nil],
+                       [NSMutableArray arrayWithObjects:@"1",@"2",@"3",@"4", nil],
+                       [NSMutableArray arrayWithObjects:@"5",@"6",@"7",@"8", nil],
+                       [NSMutableArray arrayWithObjects:@"9",@"10",@"11",@"12", nil],
                        nil];
         _tableView = [[DragAndDropTableView alloc] initWithFrame:self.view.bounds];
         [self.view addSubview:_tableView];
