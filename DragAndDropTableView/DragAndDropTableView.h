@@ -28,6 +28,15 @@
  @param tableView The table view providing this information.
  */
 -(BOOL)tableViewShouldAnimateDraggedCells:(DragAndDropTableView *)tableView;
+
+/**
+ Asks the datasource for a view to be used as the snapshot for a given cell.
+ The snapshot view is the view that actually gets dragged around by the user's finger.
+ 
+ @param indexPath The index path of the cell the snapshot view will replace.
+ */
+- (UIImageView *)snapshotImageViewForCellAtIndexPath:(NSIndexPath *)indexPath;
+
 @end
 
 @protocol DragAndDropTableViewDelegate <NSObject>

@@ -120,8 +120,7 @@ const static CGFloat kAutoScrollingThreshold = 60;
         _proxyDataSource.movingIndexPath = _movingIndexPath;
         
         // create a snapshot of the cell we are about to move
-        _cellSnapShotImageView = [[UIImageView alloc] initWithImage:[cell snapshotImage]];
-        _cellSnapShotImageView.alpha = .6;
+        _cellSnapShotImageView = [self snapshotImageViewForCellAtIndexPath:_movingIndexPath];
         [self addSubview:_cellSnapShotImageView];
         _cellSnapShotImageView.center = CGPointMake(_cellSnapShotImageView.center.x, _latestTouchPoint.y + _touchOffset.y);
 
@@ -258,6 +257,23 @@ const static CGFloat kAutoScrollingThreshold = 60;
         _proxyDataSource.movingIndexPath = nil;
         _tempNewSectionIndexPath = nil;
     }
+}
+
+#pragma mark - 
+
+#pragma mark Snapshot View
+
+- (UIImageView *)snapshotImageViewForCellAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (self.dataSource
+        && [self.dataSource respondsToSelector:@selector(snapshotImageViewForCellAtIndexPath:)]) {
+        return [self.dataSource performSelector:@selector(snapshotImageViewForCellAtIndexPath:) withObject:indexPath];
+    }
+    
+    UITableViewCell *cell = [self cellForRowAtIndexPath:indexPath];
+    UIImageView *snapshotImageView = [[UIImageView alloc] initWithImage:[cell snapshotImage]];
+    snapshotImageView.alpha = .6;
+    return snapshotImageView;
 }
 
 #pragma mark -
