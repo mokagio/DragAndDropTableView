@@ -8,6 +8,7 @@
 
 #import "DNDViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "UIView+Snapshot.h"
 
 @interface DNDViewController ()
 
@@ -119,6 +120,20 @@
         }
         [tableView endUpdates];
     }
+}
+
+- (UIImageView *)snapshotImageViewForCellAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPath];
+    UIImageView *snapshotView = [[UIImageView alloc] initWithImage:[cell snapshotImage]];
+    snapshotView.transform = CGAffineTransformMakeScale(1.01f, 1.01f);
+    
+    snapshotView.layer.masksToBounds = NO;
+    snapshotView.layer.cornerRadius = 0.0f;
+    snapshotView.layer.shadowOffset = CGSizeMake(-5.0f, 0.0f);
+    snapshotView.layer.shadowRadius = 5.0f;
+    snapshotView.layer.shadowOpacity = 0.4f;
+    
+    return snapshotView;
 }
 
 #pragma mark -
