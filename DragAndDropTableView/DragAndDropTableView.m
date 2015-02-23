@@ -409,13 +409,6 @@ const static CGFloat kAutoScrollingThreshold = 60;
 
 #pragma mark UITableViewDataSource
 
--(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    // if there are no cells in section we must fake one so that is will be possible to insert a row
-    NSInteger rows = [_dataSource tableView:tableView numberOfRowsInSection:section];
-    return rows == 0 ? 1 : rows;
-}
-
 -(void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
 {
     NSInteger rows = [_dataSource tableView:tableView numberOfRowsInSection:destinationIndexPath.section];
@@ -438,28 +431,6 @@ const static CGFloat kAutoScrollingThreshold = 60;
         [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:sourceIndexPath] withRowAnimation:UITableViewRowAnimationNone];
         [tableView endUpdates];
     }
-    
-}
-
--(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    BOOL updated = NO;
-    if(UITableViewCellEditingStyleDelete == editingStyle)
-    {
-        // if there source section will be empty after the update, a fake row must be inserted
-        NSInteger rows = [_dataSource tableView:tableView numberOfRowsInSection:indexPath.section];
-        if(rows == 1)
-        {
-            [tableView beginUpdates];
-            [_dataSource tableView:tableView commitEditingStyle:editingStyle forRowAtIndexPath:indexPath];
-            [tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
-            [tableView endUpdates];
-            updated = YES;
-        }
-    }
-    
-    if(!updated)
-        [_dataSource tableView:tableView commitEditingStyle:editingStyle forRowAtIndexPath:indexPath];
     
 }
 
